@@ -48,7 +48,8 @@ __all__ = (
     "C2fCIB",
     "Attention",
     "PSA",
-    "SCDown",
+    "SCDown"
+   
 )
 
 
@@ -1107,3 +1108,4 @@ class SCDown(nn.Module):
     def forward(self, x):
         """Applies convolution and downsampling to the input tensor in the SCDown module."""
         return self.cv2(self.cv1(x))
+

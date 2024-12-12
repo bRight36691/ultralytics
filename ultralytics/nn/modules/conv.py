@@ -21,6 +21,7 @@ __all__ = (
     "CBAM",
     "Concat",
     "RepConv",
+    "MixConv"
 )
 
 
@@ -330,3 +331,14 @@ class Concat(nn.Module):
     def forward(self, x):
         """Forward pass for the YOLOv8 mask Proto module."""
         return torch.cat(x, self.d)
+
+class MixConv(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_sizes, stride=1, padding='same'):
+        super(MixConv, self).__init__()
+        self.convs = nn.ModuleList([
+            nn.Conv2d(in_channels, out_channels // len(kernel_sizes), kernel_size=k, stride=stride, padding=k // 2)
+            for k in kernel_sizes
+        ])
+
+    def forward(self, x):
+        return torch.cat([conv(x) for conv in self.convs], dim=1)
