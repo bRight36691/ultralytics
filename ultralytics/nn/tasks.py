@@ -1,5 +1,5 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
-from nn.modules import MixConv  # Import the MixConv class
+from ultralytics.nn.modules import MixConv  # Import the MixConv class
 globals()['MixConv'] = MixConv        
       # Register it globally
 import contextlib
