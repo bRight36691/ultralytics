@@ -21,7 +21,7 @@ __all__ = (
     "CBAM",
     "Concat",
     "RepConv",
-    "MixConv"
+    "MixConv",
 )
 
 
