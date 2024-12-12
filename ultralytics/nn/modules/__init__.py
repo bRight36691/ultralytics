@@ -72,7 +72,7 @@ from .conv import (
     LightConv,
     RepConv,
     SpatialAttention,
-    MixConv
+    MixConv,
 )
 from .head import OBB, Classify, Detect, Pose, RTDETRDecoder, Segment, WorldDetect, v10Detect
 from .transformer import (
@@ -158,5 +158,5 @@ __all__ = (
     "C2fCIB",
     "Attention",
     "PSA",
-    "MixConv"
+    "MixConv",
 )
