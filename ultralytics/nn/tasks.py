@@ -1014,8 +1014,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
                 )  # num heads
 
             args = [c1, c2, *args[1:]]
-            if m is MixConv:
-                args = [c1, c2, args[1], args[2] if len(args) > 2 else (3, 5)]  # Default to (3, 5) kernel sizes
+           
             if m in {
                 BottleneckCSP,
                 C1,
