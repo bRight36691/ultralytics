@@ -112,4 +112,3 @@ class YOLOWorld(Model):
         if self.predictor:
             self.predictor.model.names = classes
 
-model = YOLO('yolo11n.yaml')
