@@ -141,7 +141,9 @@ class Model(nn.Module):
 
         # Load or create new YOLO model
         if Path(model).suffix in {".yaml", ".yml"}:
+            print('new')
             self._new(model, task=task, verbose=verbose)
+            
         else:
             self._load(model, task=task)
 
@@ -249,7 +251,9 @@ class Model(nn.Module):
             >>> model = Model()
             >>> model._new("yolov8n.yaml", task="detect", verbose=True)
         """
+        print('yaml_model_load',cfg)
         cfg_dict = yaml_model_load(cfg)
+        
         self.cfg = cfg
         self.task = task or guess_model_task(cfg_dict)
         self.model = (model or self._smart_load("model"))(cfg_dict, verbose=verbose and RANK == -1)  # build model
