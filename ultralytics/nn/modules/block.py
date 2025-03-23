@@ -1139,7 +1139,7 @@ class CDCB(nn.Module):
         return fused
 
 
-class DBRABottleneck(nn.module):
+class DBRABottleneck(nn.Module):
     def __init__(self, in_channels,  out_channels):
         super(DBRABottleneck, self).__init__()
         mid_channels = in_channels//2
@@ -1169,7 +1169,7 @@ class DBRABottleneck(nn.module):
         return out
     
 
-class DBRA(nn.module):
+class DBRA(nn.Module):
     def __init__(self,in_channels):
         super(DBRA, self).__init__()
         self.bottleneck = DBRABottleneck(in_channels,in_channels)
