@@ -1121,17 +1121,17 @@ class CDCB(nn.Module):
         self.conv3 = nn.Conv2d(c_out,c_out,kernel_size=k,padding = dilation_rate , dilation=dilation_rate)
         self.conv4 = nn.Conv2d(c_out,c_out,kernel_size=k,padding = dilation_rate , dilation=dilation_rate)
 
-        self.bn1 = nn.BatchNorm2d(c_out)
+        self.bn = nn.BatchNorm2d(c_out)
 
         self.activation = activation
     
     def forward(self,x):
         # First conv + BN + Activation
-        out1 = self.activation(self.bn1(self.conv1(x)))
+        out1 = self.activation(self.bn(self.conv1(x)))
         # Next layers based on previous output
-        out2 = self.activation(self.bn2(self.conv2(out1)))
-        out3 = self.activation(self.bn3(self.conv3(out2)))
-        out4 = self.activation(self.bn4(self.conv4(out3)))
+        out2 = self.activation(self.bn(self.conv2(out1)))
+        out3 = self.activation(self.bn(self.conv3(out2)))
+        out4 = self.activation(self.bn(self.conv4(out3)))
         
         # Element-wise summation
         fused = out1 + out2 + out3 + out4
