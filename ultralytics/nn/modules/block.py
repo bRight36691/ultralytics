@@ -1113,7 +1113,7 @@ class SCDown(nn.Module):
 
 
 class CDCB(nn.Module):
-    def __init__ (self,c_in, k=3, dilation_rate=2,activation=nn.ReLU(inplace=True)):
+    def __init__ (self,c_in,c_out, k=3, dilation_rate=2,activation=nn.ReLU(inplace=True)):
         super(CDCB, self).__init__()
         c_out = c_in // 2
         self.conv1 = nn.Conv2d(c_in,c_out,kernel_size=k,padding = dilation_rate , dilation=dilation_rate)
@@ -1170,7 +1170,7 @@ class DBRABottleneck(nn.Module):
     
 
 class DBRA(nn.Module):
-    def __init__(self,in_channels):
+    def __init__(self,in_channels,out_channels):
         super(DBRA, self).__init__()
         self.bottleneck = DBRABottleneck(in_channels,in_channels)
         self.CA = CoordinateAttention(in_channels)
