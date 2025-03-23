@@ -56,6 +56,8 @@ from .block import (
     RepVGGDW,
     ResNetLayer,
     SCDown,
+     CDCB,
+     DBRA
     
 )
 from .conv import (
@@ -73,6 +75,7 @@ from .conv import (
     RepConv,
     SpatialAttention,
     MixConv,
+    
 )
 from .head import OBB, Classify, Detect, Pose, RTDETRDecoder, Segment, WorldDetect, v10Detect
 from .transformer import (
@@ -159,4 +162,6 @@ __all__ = (
     "Attention",
     "PSA",
     "MixConv",
+     "CDCB",
+     "DBRA",
 )

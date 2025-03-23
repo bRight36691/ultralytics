@@ -7,7 +7,7 @@ import torch.nn.functional as F
 
 from ultralytics.utils.torch_utils import fuse_conv_and_bn
 
-from .conv import Conv, DWConv, GhostConv, LightConv, RepConv, autopad
+from .conv import Conv, DWConv, GhostConv, LightConv, RepConv, autopad, CoordinateAttention, CBAM
 from .transformer import TransformerBlock
 
 __all__ = (
@@ -48,7 +48,9 @@ __all__ = (
     "C2fCIB",
     "Attention",
     "PSA",
-    "SCDown"
+    "SCDown",
+    "CDCB",
+    "DBRA"
    
 )
 
@@ -1109,3 +1111,87 @@ class SCDown(nn.Module):
         """Applies convolution and downsampling to the input tensor in the SCDown module."""
         return self.cv2(self.cv1(x))
 
+
+class CDCB(nn.Module):
+    def __init__ (self,c_in, k=3, dilation_rate=2,activation=nn.ReLU(inplace=True)):
+        super(CDCB, self).__init__()
+        c_out = c_in // 2
+        self.conv1 = nn.Conv2d(c_in,c_out,kernel_size=k,padding = dilation_rate , dilation=dilation_rate)
+        self.conv2 = nn.Conv2d(c_out,c_out,kernel_size=k,padding = dilation_rate , dilation=dilation_rate)
+        self.conv3 = nn.Conv2d(c_out,c_out,kernel_size=k,padding = dilation_rate , dilation=dilation_rate)
+        self.conv4 = nn.Conv2d(c_out,c_out,kernel_size=k,padding = dilation_rate , dilation=dilation_rate)
+
+        self.bn1 = nn.BatchNorm2d(c_out)
+
+        self.activation = activation
+    
+    def forward(self,x):
+        # First conv + BN + Activation
+        out1 = self.activation(self.bn1(self.conv1(x)))
+        # Next layers based on previous output
+        out2 = self.activation(self.bn2(self.conv2(out1)))
+        out3 = self.activation(self.bn3(self.conv3(out2)))
+        out4 = self.activation(self.bn4(self.conv4(out3)))
+        
+        # Element-wise summation
+        fused = out1 + out2 + out3 + out4
+        
+        return fused
+
+
+class DBRABottleneck(nn.module):
+    def __init__(self, in_channels,  out_channels):
+        super(DBRABottleneck, self).__init__()
+        mid_channels = in_channels//2
+        self.conv1 = nn.Conv2d(in_channels, mid_channels, kernel_size=3, padding=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(mid_channels)
+        
+        self.conv2 = nn.Conv2d(mid_channels, mid_channels, kernel_size=3, padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(mid_channels)
+        
+        self.conv3 = nn.Conv2d(mid_channels, out_channels, kernel_size=1, bias=False)
+        self.bn3 = nn.BatchNorm2d(out_channels)
+        
+        self.relu = nn.ReLU(inplace=True)
+
+    def forward(self, x):
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+
+        out = self.conv2(out)
+        out = self.bn2(out)
+        out = self.relu(out)
+
+        out = self.conv3(out)
+        out = self.bn3(out)
+
+        return out
+    
+
+class DBRA(nn.module):
+    def __init__(self,in_channels):
+        super(DBRA, self).__init__()
+        self.bottleneck = DBRABottleneck(in_channels,in_channels)
+        self.CA = CoordinateAttention(in_channels)
+        self.CBAM = CBAM(in_channels)
+        self.relu = nn.ReLU(inplace=True)
+    
+    def forward(self,x):
+        x_bottle = self.bottleneck(x)
+
+        x_ca = self.CA(x_bottle)
+        f1 = self.relu(x+x_ca)
+
+        x_cbam = self.CBAM(x_bottle)
+        f2 = self.relu(x+x_cbam)
+
+        out = torch.cat((f1,f2),dim=1)
+
+        return out
+
+
+    
+
+        
+        

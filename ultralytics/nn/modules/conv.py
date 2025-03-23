@@ -22,6 +22,7 @@ __all__ = (
     "Concat",
     "RepConv",
     "MixConv",
+    "CoordinateAttention"
 )
 
 
@@ -342,3 +343,44 @@ class MixConv(nn.Module):
 
     def forward(self, x):
         return torch.cat([conv(x) for conv in self.convs], dim=1)
+    
+
+class CoordinateAttention(nn.Module):
+    def __init__(self, in_channels, reduction=32):
+        super(CoordinateAttention, self).__init__()
+        self.in_channels = in_channels
+        self.reduction = reduction
+        self.mid_channels = max(8, in_channels // reduction)  # F1 layer size
+        
+        # Transform functions
+        self.conv1 = nn.Conv2d(in_channels, self.mid_channels, kernel_size=1, bias=False)
+        self.bn = nn.BatchNorm2d(self.mid_channels)
+        self.act = nn.ReLU()
+        
+        self.Fh = nn.Conv2d(self.mid_channels, in_channels, kernel_size=1, bias=False)
+        self.Fw = nn.Conv2d(self.mid_channels, in_channels, kernel_size=1, bias=False)
+        
+        self.sigmoid = nn.Sigmoid()
+    
+    def forward(self, x):
+        batch, channels, H, W = x.size()
+        
+        # Step 1: Compute aggregated feature maps along height and width
+        z_h = x.mean(dim=3, keepdim=True)  # Shape: (B, C, H, 1)
+        z_w = x.mean(dim=2, keepdim=True).permute(0, 1, 3, 2)  # Shape: (B, C, 1, W)
+        
+        # Step 2: Concatenate and apply transformation
+        concat = torch.cat((z_h, z_w), dim=2)  # Shape: (B, C, H+1, W) or (B, C, H, W+1)
+        f = self.conv1(concat)
+        f = self.bn(f)
+        f = self.act(f)
+        
+        # Step 3: Split and apply attention functions
+        f_h, f_w = torch.split(f, [H, W], dim=2)  # Split into (B, C, H, 1) and (B, C, 1, W)
+        g_h = self.sigmoid(self.Fh(f_h))
+        g_w = self.sigmoid(self.Fw(f_w))
+        
+        # Step 4: Apply attention
+        out = x * g_h * g_w.permute(0, 1, 3, 2)
+        
+        return out

@@ -1,6 +1,8 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
-from ultralytics.nn.modules import MixConv  # Import the MixConv class
+from ultralytics.nn.modules import MixConv, CDCB,DBRA  # Import the MixConv class
 globals()['MixConv'] = MixConv        
+globals()['CDCB'] =  CDCB
+globals()['DBRA'] = DBRA
       # Register it globally
 import contextlib
 import pickle
@@ -64,6 +66,8 @@ from ultralytics.nn.modules import (
     WorldDetect,
     v10Detect,
     MixConv,
+    CDCB,
+    DBRA,
 )
 from ultralytics.utils import DEFAULT_CFG_DICT, DEFAULT_CFG_KEYS, LOGGER, colorstr, emojis, yaml_load
 from ultralytics.utils.checks import check_requirements, check_suffix, check_yaml
@@ -1000,7 +1004,10 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
             PSA,
             SCDown,
             C2fCIB,
-            MixConv,
+            MixConv, 
+            CDCB,
+            DBRA,
+            
         }:
             
             #//
@@ -1030,6 +1037,8 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
                 C2fPSA,
                 C2fCIB,
                 C2PSA,
+                 CDCB,
+                 DBRA,
             }:
                 args.insert(2, n)  # number of repeats
                 n = 1
