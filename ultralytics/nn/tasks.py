@@ -1074,7 +1074,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
         elif m is CBFuse:
             c2 = ch[f[-1]]
         elif m is CDCB or m is DBRA :
-            args = [ch[f], args[0]]
+            args = [ch[f],  make_divisible(min(args[0], max_channels) * width, 8)]
         else:
             c2 = ch[f]
         print(args)
