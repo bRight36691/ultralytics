@@ -382,5 +382,7 @@ class CoordinateAttention(nn.Module):
         
         # Step 4: Apply attention
         out = x * g_h * g_w.permute(0, 1, 3, 2)
+
+        print("CA",out.shape)
         
         return out
