@@ -1127,7 +1127,6 @@ class CDCB(nn.Module):
     
     def forward(self,x):
         # First conv + BN + Activation
-        print("input",x.shape)
         out1 = self.activation(self.bn(self.conv1(x)))
         # Next layers based on previous output
         out2 = self.activation(self.bn(self.conv2(out1)))
