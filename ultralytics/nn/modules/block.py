@@ -1136,7 +1136,6 @@ class CDCB(nn.Module):
         
         # Element-wise summation
         fused = out1 + out2 + out3 + out4
-        print(CDCB,fused.shape)
         
         return fused
 
@@ -1168,7 +1167,6 @@ class DBRABottleneck(nn.Module):
         out = self.conv3(out)
         out = self.bn3(out)
 
-        print("Bottleneeck",out.shape)
 
         return out
     
@@ -1192,7 +1190,6 @@ class DBRA(nn.Module):
 
         out = torch.cat((f1,f2),dim=1)
 
-        print("DBRA" ,out.shape)
 
         return out
 

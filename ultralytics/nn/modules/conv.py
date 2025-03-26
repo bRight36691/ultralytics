@@ -319,7 +319,6 @@ class CBAM(nn.Module):
     def forward(self, x):
         """Applies the forward pass through C1 module."""
         out = self.spatial_attention(self.channel_attention(x))
-        print("CBAM",out.shape)
         return out
 
 
@@ -385,6 +384,5 @@ class CoordinateAttention(nn.Module):
         # Step 4: Apply attention
         out = x * g_h * g_w.permute(0, 1, 3, 2)
 
-        print("CA",out.shape)
         
         return out
