@@ -318,7 +318,9 @@ class CBAM(nn.Module):
 
     def forward(self, x):
         """Applies the forward pass through C1 module."""
-        return self.spatial_attention(self.channel_attention(x))
+        out = self.spatial_attention(self.channel_attention(x))
+        print("CBAM",out.shape)
+        return out
 
 
 class Concat(nn.Module):
